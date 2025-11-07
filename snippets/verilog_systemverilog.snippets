@@ -1,0 +1,371 @@
+snippet `in
+	\`include "${1:uvm_macros.svh}"
+	
+snippet import
+	import   ${1:uvm_pkg}::*;
+	\`include "uvm_macros.svh"
+	
+	
+snippet ffp
+	always_ff @ (posedge clk) begin
+	    $0
+	end
+	
+	
+snippet ffn
+	always_ff @ (negedge ${1:clk}) begin
+	    $0
+	end
+	
+	
+snippet comb
+	always_comb begin
+	    ${1:/*code*/}
+	end
+	
+	
+snippet latch
+	always_latch
+	begin
+	    ${1:/*code*/}
+	end
+	
+	
+snippet inside
+	${1:/*var*/} inside ${2:/*var*/}
+	
+	
+snippet log
+	logic                       ${1:inport};
+	
+	
+snippet logb
+	logic   [${1:MSB}:00]             ${2:inport};
+	
+	
+snippet in
+	input   logic               ${1:inport},
+	
+	
+snippet inb
+	input   logic   [${1:MSB}:00]     ${2:inport},
+	
+	
+	#output
+snippet our
+	output  logic               ${1:outport},
+	
+	
+snippet outr
+	output  logic   [${1:MSB}:00]     ${2:outport},
+	
+	
+snippet package
+	package ${1:name};
+	endpackage
+	
+	
+snippet state
+	localparam              IDLE    = 0;
+	localparam              OVER    = 1;
+	(* KEEP = "TRUE" *)reg    [OVER:00]        cs = 'd1, ns = 'd1;
+	reg     [15:00]         state_cnt;
+	
+	// synthesis translate_off
+	reg [127:0] cs_STRING;
+	always @(*)
+	begin
+	    case(1'b1)
+	        cs[IDLE]: cs_STRING = "IDLE";
+	        cs[HEAD]: cs_STRING = "HEAD";
+	        default: cs_STRING = "XXXX";
+	    endcase
+	end
+	// synthesis translate_on
+	
+	always_ff @(posedge clk)
+	begin
+	    if(rst)
+	        cs <= 'd1;
+	    else
+	        cs <= ns;
+	end
+	
+	always_comb @(*)
+	begin
+	    ns = 'd0;
+	    case(1'b1)
+	        cs[IDLE]:
+	        begin
+	            if(/*condition*/)
+	                ns[/*next_state*/] = 1'b1;
+	            else
+	                ns[IDLE] = 1'b1;
+	        end
+	        cs[HEAD]:
+	        begin
+	            if(/*condition*/)
+	                ns[/*next_state*/] = 1'b1;
+	            else
+	                ns[HEAD] = 1'b1;
+	        end
+	        default:
+	            ns[IDLE] = 1'b1;
+	    endcase
+	end
+	
+	
+	always_ff @ (posedge clk)
+	begin
+	    if(rst)
+	    begin
+	    end
+	    else
+	    begin
+	        case (1'b1)
+	            ns[IDLE]:
+	            begin
+	                /*code*/
+	            end
+	            /*code*/
+	            default:
+	            begin
+	                /*code*/
+	            end
+	        endcase
+	    end
+	end
+	
+	always_ff @ (posedge clk)
+	begin
+	    if(rst)
+	        state_cnt <= 0;
+	    else if (cs != ns)
+	        state_cnt <= 0;
+	    else
+	        state_cnt <= state_cnt + 1'b1;
+	end
+	
+	
+	#######################################################################
+	######################   SIM          #################################
+	#######################################################################
+snippet interface
+	interface ${1:name}
+	(
+	  $0
+	);
+	endinterface
+	
+	
+snippet clocking
+	clocking ${1:cb} @ (posedge clk);
+	input   #${2:time}  /*signal*/;
+	output  #${3:time}  /*signal*/;
+	endclocking
+	
+	
+snippet modport
+	modport ${1:master}
+	(
+	    input                       ${2:clk},
+	    output                      ${2:clk},
+	);
+	
+	
+snippet struct
+	typedef struct packed
+	{
+	    /*data*/;
+	}${1:/*struct*/}_s;
+	
+	
+snippet union
+	typedef union packed
+	{
+	    /*data*/;
+	}${1:/*union*/}_u;
+	
+	
+snippet foreach
+	foreach(${1:name}[${2:index}]) begin
+	  $0
+	end
+	
+	
+snippet fork
+	fork
+	  begin
+	    ${1:thread}
+	  end
+	$0
+	
+	
+snippet task
+	task ${1:task name}(${2:argument list});
+	  $0
+	endtask
+	
+	
+snippet function
+	function ${1:return type} ${2:func name}(${3:argument list});
+	  $0
+	endfunction
+	
+	
+snippet assert
+	assert(${1:condition})
+	else $error(${2:failed});
+	
+	
+snippet enum
+	typedef enum
+	{
+	  $0
+	}${1:type name};
+	
+	
+	
+snippet covergroup
+	covergroup ${1:name};
+	  option.name = $1;
+	  $0
+	endgroup
+	
+	
+snippet coverpoint
+	${1:name} : coverpoint ${2:name}
+	{
+	  $0
+	}
+	
+	
+	#######################################################################
+	######################   UVM          #################################
+	#######################################################################
+	
+snippet uvm_info
+	\`uvm_info("${1:class_name}", $sformatf("${2:info}"), UVM_LOW);
+	
+	
+snippet uvm_fatal
+	\`uvm_fatal("${1:class_name}", $sformatf("${2:info}"));
+	
+	
+snippet uvm_error
+	\`uvm_error("${1:class_name}", $sformatf("${2:info}"));
+	
+	
+snippet uvm_component_utils
+	\`uvm_component_utils(${1:class_name});
+	
+	
+snippet uvm_object_utils
+	\`uvm_object_utils(${1:class_name});
+	
+	
+snippet uvm_config_db
+	uvm_config_db#(${1:type})::${2:set or get}(this, "*", "${3}", ${4});
+	
+snippet uvmobj
+	class ${1:my_obj} extends uvm_object;
+		\`uvm_object_utils(${1})
+	
+		$0
+		function new(string name = "${1}");
+			super.new(name);
+		endfunction : new
+	endclass : ${1}
+	
+	
+snippet uvmcomp
+	class ${1:my_comp} extends uvm_component;
+	  \`uvm_component_utils(${1})
+	
+	  $0
+	  function new(string name, uvm_component parent);
+	    super.new(name, parent);
+	  endfunction : new
+	
+	  function void build_phase(uvm_phase phase);
+	    super.build_phase(phase);
+	  endfunction : build_phase
+	
+	  function void connect_phase(uvm_phase phase);
+	    super.connect_phase(phase);
+	  endfunction : connect_phase
+	
+	  task run_phase(uvm_phase phase);
+	  endtask : run_phase
+	
+	endclass : ${1}
+	
+	
+snippet uvmobjx
+	class ${1:my_obj} extends ${2:uvm_object};
+	  \`uvm_object_utils(${1})
+	
+	  function new(string name = "${1}");
+	    super.new(name);
+	  endfunction : new
+	
+	endclass : ${1}
+	
+	
+snippet uvmcompx
+	class ${1:my_comp} extends ${2:uvm_component};
+	  \`uvm_component_utils(${1})
+	
+	  function new(string name, uvm_component parent);
+	    super.new(name, parent);
+	  endfunction : new
+	
+	  function void build_phase(uvm_phase phase);
+	    super.build_phase(phase);
+	  endfunction : build_phase
+	
+	  function void connect_phase(uvm_phase phase);
+	    super.connect_phase(phase);
+	  endfunction : connect_phase
+	
+	  task run_phase(uvm_phase phase);
+	  endtask : run_phase
+	
+	endclass : ${1}
+	
+	
+snippet uvmobjpx
+	class ${1:my_obj} #(
+	  type ${2:T} = int $0
+	) extends ${3:uvm_object};
+	  \`uvm_object_param_utils(${1} #(${2}))
+	
+	  function new(string name = "${1}");
+	    super.new(name);
+	  endfunction : new
+	
+	endclass : ${1}
+	
+	
+snippet uvmcomppx
+	class ${1:my_comp} #(
+	  type ${2:T} = int $0
+	) extends ${3:uvm_component};
+	  \`uvm_component_param_utils(${1} #(${2}))
+	
+	  function new(string name, uvm_component parent);
+	    super.new(name, parent);
+	  endfunction : new
+	
+	  function void build_phase(uvm_phase phase);
+	    super.build_phase(phase);
+	  endfunction : build_phase
+	
+	  function void connect_phase(uvm_phase phase);
+	    super.connect_phase(phase);
+	  endfunction : connect_phase
+	
+	  task run_phase(uvm_phase phase);
+	  endtask : run_phase
+	
+	endclass : ${1}
